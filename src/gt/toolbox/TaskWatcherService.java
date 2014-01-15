@@ -12,26 +12,28 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 
-public class TaskWatcher extends Service {
+public class TaskWatcherService extends Service {
 	public static enum ListenerType {
 		ENTER, EXIT
 	};
 
-	private static TaskWatcher self = null;
+	// singleton like access
+	private static TaskWatcherService self = null;
 
+	// observe task change
 	private String lastPackage = "";
-	private Hashtable<String, HashSet<ActivityLaucheListener>> listeners = new Hashtable<String, HashSet<ActivityLaucheListener>>();
 	private ActivityManager manager;
+	// commands for each event
+	private Hashtable<String, HashSet<ActivityLaucheListener>> listeners = new Hashtable<String, HashSet<ActivityLaucheListener>>();
 	private Context context = new Context();
 
+	// threading
+	private static int INTERVAL = 1000;
 	private boolean run = true;
 	private Handler handler = new Handler();
 	private Task task = new Task();
 
-	public static TaskWatcher getInstance() {
-		if (self == null) {
-			self = new TaskWatcher();
-		}
+	public static TaskWatcherService getInstance() {
 		return self;
 	}
 
@@ -45,7 +47,10 @@ public class TaskWatcher extends Service {
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
-		TaskWatcher.self = this;
+		// for singleton like access
+		TaskWatcherService.self = this;
+
+		// observing
 		manager = (ActivityManager) getSystemService(Service.ACTIVITY_SERVICE);
 		new Thread() {
 
@@ -55,35 +60,25 @@ public class TaskWatcher extends Service {
 				super.run();
 				while (run) {
 					try {
-						Thread.sleep(1000);
-						if (manager == null) {
-							System.out.println("manager");
-							continue;
-						}
-						List<RunningTaskInfo> infos = manager
-								.getRunningTasks(1);
-						if (infos == null) {
-							System.out.println("info");
-							continue;
-						}
-						RunningTaskInfo runningInfo = infos.get(0);
-						if (runningInfo == null) {
-							System.out.println("running Info");
-							continue;
-						}
+						Thread.sleep(INTERVAL);
+						RunningTaskInfo runningInfo = manager
+								.getRunningTasks(1).get(0);
+
+						// the starter of this task stack
+						// control granularity is task stack
 						ComponentName activity = runningInfo.baseActivity;
-						if (activity == null) {
-							System.out.println("activity");
-							continue;
-						}
 						String currentPackage = activity.getPackageName();
 
 						if (!currentPackage.equals(lastPackage)) {
-							task.setPackage(currentPackage, lastPackage);
-							handler.post(task);
+							if (!listeners.get(currentPackage).isEmpty()) {
+								// new task
+								task.setPackage(currentPackage, lastPackage);
+								// change settings on main thread
+								handler.post(task);
+							}
 							lastPackage = currentPackage;
+							System.out.println(lastPackage);
 						}
-						System.out.println(lastPackage);
 					} catch (InterruptedException e) {
 						System.out.println(e.getMessage());
 					}
@@ -103,6 +98,7 @@ public class TaskWatcher extends Service {
 		super.onDestroy();
 	}
 
+	// -----listeners
 	public void registerListener(String packageName,
 			ActivityLaucheListener listener) {
 		if (!listeners.containsKey(packageName)) {
@@ -123,6 +119,7 @@ public class TaskWatcher extends Service {
 		}
 	}
 
+	// invoke the commands stored in listeners registered under the package
 	private void informListener(ListenerType type, String packageName) {
 		HashSet<ActivityLaucheListener> set = listeners.get(packageName);
 		if (set == null) {
@@ -150,6 +147,7 @@ public class TaskWatcher extends Service {
 		informListener(ListenerType.EXIT, lastPackage);
 	}
 
+	// all the changes must be done on the main thread
 	class Task implements Runnable {
 		private String newPackage;
 		private String oldPackage;

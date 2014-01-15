@@ -16,7 +16,7 @@ public class LockerListener extends ActivityLaucheListener {
 	@Override
 	public void onLaunch(String packageName, Context context) {
 		// TODO Auto-generated method stub
-		manager = (PowerManager) TaskWatcher.getInstance().getSystemService(
+		manager = (PowerManager) TaskWatcherService.getInstance().getSystemService(
 				android.content.Context.POWER_SERVICE);
 		lock = manager.newWakeLock(PowerManager.FULL_WAKE_LOCK, tag);
 		lock.acquire();
