@@ -17,7 +17,7 @@ import android.os.Handler;
 import android.os.IBinder;
 
 public class TaskWatcherService extends Service {
-	public static enum ListenerType {
+	public static enum ActionType {
 		ENTER, EXIT
 	};
 
@@ -136,7 +136,7 @@ public class TaskWatcherService extends Service {
 	}
 
 	// invoke the commands stored in listeners registered under the package
-	private void informListener(ListenerType type, String packageName) {
+	private void informListener(ActionType type, String packageName) {
 		HashSet<ActivityLaucheListener> set = listeners.get(packageName);
 		if (set == null) {
 			return;
@@ -160,7 +160,7 @@ public class TaskWatcherService extends Service {
 	}
 
 	private void exitNow() {
-		informListener(ListenerType.EXIT, lastPackage);
+		informListener(ActionType.EXIT, lastPackage);
 	}
 
 	// all the changes must be done on the main thread
@@ -176,8 +176,8 @@ public class TaskWatcherService extends Service {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			informListener(ListenerType.EXIT, oldPackage);
-			informListener(ListenerType.ENTER, newPackage);
+			informListener(ActionType.EXIT, oldPackage);
+			informListener(ActionType.ENTER, newPackage);
 		}
 	}
 }

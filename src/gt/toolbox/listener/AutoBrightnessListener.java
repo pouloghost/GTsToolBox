@@ -29,4 +29,10 @@ public class AutoBrightnessListener extends ActivityLaucheListener {
 				Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC, uri);
 	}
 
+	@Override
+	public String getPara() {
+		// TODO Auto-generated method stub
+		return "";
+	}
+
 }

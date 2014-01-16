@@ -1,7 +1,5 @@
 package gt.toolbox;
 
-import gt.toolbox.listener.BrightnessListener;
-import gt.toolbox.listener.LockerListener;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
