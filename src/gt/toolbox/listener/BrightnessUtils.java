@@ -13,10 +13,6 @@ public class BrightnessUtils {
 			Settings.System.putInt(wrapper.getContentResolver(),
 					Settings.System.SCREEN_BRIGHTNESS_MODE, mode);
 			BrightnessUtils.notifyChange(uri, null);
-			System.out
-					.println("mode "
-							+ (mode == Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL ? "manual"
-									: "auto"));
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println(e);

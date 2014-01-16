@@ -19,7 +19,7 @@ public class BrightnessListener extends ActivityLaucheListener {
 	public void onLaunch(ContextWrapper wrapper, String packageName,
 			Context context) {
 		// TODO Auto-generated method stub
-		BrightnessUtils.setBrightness(wrapper,brightness,uri);
+		BrightnessUtils.setBrightness(wrapper, brightness, uri);
 	}
 
 	@Override

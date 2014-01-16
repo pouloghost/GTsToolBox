@@ -66,12 +66,6 @@ public class MainActivity extends Activity {
 		});
 
 		startService(i);
-		TaskWatcherService.getInstance().registerListener("gt.toolbox",
-				new LockerListener("gt.toolbox"));
-		TaskWatcherService.getInstance().registerListener("com.bbk.launcher2",
-				new BrightnessListener(1));
-		TaskWatcherService.getInstance().registerListener(
-				"com.android.launcher", new BrightnessListener(1));
 
 		createFloatWindow(true);
 	}

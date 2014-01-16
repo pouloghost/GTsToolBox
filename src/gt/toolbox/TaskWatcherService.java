@@ -1,6 +1,8 @@
 package gt.toolbox;
 
 import gt.toolbox.listener.ActivityLaucheListener;
+import gt.toolbox.listener.BrightnessListener;
+import gt.toolbox.listener.LockerListener;
 
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -51,7 +53,12 @@ public class TaskWatcherService extends Service {
 		super.onCreate();
 		// for singleton like access
 		TaskWatcherService.self = this;
+		startListening();
+		bindListeners();
+	}
 
+	private void startListening() {
+		// TODO Auto-generated method stub
 		// observing
 		manager = (ActivityManager) getSystemService(Service.ACTIVITY_SERVICE);
 		new Thread() {
@@ -88,6 +95,13 @@ public class TaskWatcherService extends Service {
 			}
 
 		}.start();
+	}
+
+	private void bindListeners() {
+		// TODO Auto-generated method stub
+		registerListener("gt.toolbox", new LockerListener("gt.toolbox"));
+		registerListener("com.bbk.launcher2", new BrightnessListener(1));
+		registerListener("com.android.launcher", new BrightnessListener(1));
 	}
 
 	@Override
