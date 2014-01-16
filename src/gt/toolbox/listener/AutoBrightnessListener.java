@@ -1,5 +1,7 @@
-package gt.toolbox;
+package gt.toolbox.listener;
 
+import gt.toolbox.Context;
+import android.content.ContextWrapper;
 import android.net.Uri;
 import android.provider.Settings;
 
@@ -12,16 +14,18 @@ public class AutoBrightnessListener extends ActivityLaucheListener {
 	}
 
 	@Override
-	public void onLaunch(String packageName, Context context) {
+	public void onLaunch(ContextWrapper wrapper, String packageName,
+			Context context) {
 		// TODO Auto-generated method stub
-		BrightnessUtils.setMode(
+		BrightnessUtils.setMode(wrapper,
 				Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC, uri);
 	}
 
 	@Override
-	public void onExit(String packageName, Context context) {
+	public void onExit(ContextWrapper wrapper, String packageName,
+			Context context) {
 		// TODO Auto-generated method stub
-		BrightnessUtils.setMode(
+		BrightnessUtils.setMode(wrapper,
 				Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC, uri);
 	}
 

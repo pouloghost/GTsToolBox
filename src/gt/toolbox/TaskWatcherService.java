@@ -1,9 +1,11 @@
 package gt.toolbox;
 
+import gt.toolbox.listener.ActivityLaucheListener;
+
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.List;
+
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
@@ -129,11 +131,11 @@ public class TaskWatcherService extends Service {
 		while (iterator.hasNext()) {
 			switch (type) {
 			case ENTER:
-				iterator.next().onLaunch(packageName, context);
+				iterator.next().onLaunch(this, packageName, context);
 				break;
 
 			case EXIT:
-				iterator.next().onExit(packageName, context);
+				iterator.next().onExit(this, packageName, context);
 				break;
 
 			default:
