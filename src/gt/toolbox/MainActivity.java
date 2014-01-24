@@ -64,6 +64,7 @@ public class MainActivity extends Activity {
 		});
 
 		startService(i);
+		TaskWatcherService.getInstance().startWatching(new SelfExcuteTask());
 
 		createFloatWindow(true);
 	}

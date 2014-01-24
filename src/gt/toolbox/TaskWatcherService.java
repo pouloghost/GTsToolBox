@@ -35,7 +35,7 @@ public class TaskWatcherService extends Service {
 	private static int INTERVAL = 1000;
 	private boolean run = true;
 	private Handler handler = new Handler();
-	private Task task = new Task();
+	private Task task;
 
 	public static TaskWatcherService getInstance() {
 		return self;
@@ -50,9 +50,12 @@ public class TaskWatcherService extends Service {
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
-		super.onCreate();
-		// for singleton like access
+		super.onCreate(); // for singleton like access
 		TaskWatcherService.self = this;
+	}
+
+	public void startWatching(Task task) {
+		this.task = task;
 		startListening();
 		bindListeners();
 	}
@@ -136,7 +139,7 @@ public class TaskWatcherService extends Service {
 	}
 
 	// invoke the commands stored in listeners registered under the package
-	private void informListener(ActionType type, String packageName) {
+	public void informListener(ActionType type, String packageName) {
 		HashSet<ActivityLaucheListener> set = listeners.get(packageName);
 		if (set == null) {
 			return;
@@ -161,23 +164,5 @@ public class TaskWatcherService extends Service {
 
 	private void exitNow() {
 		informListener(ActionType.EXIT, lastPackage);
-	}
-
-	// all the changes must be done on the main thread
-	class Task implements Runnable {
-		private String newPackage;
-		private String oldPackage;
-
-		public void setPackage(String newPackage, String oldPackage) {
-			this.newPackage = newPackage;
-			this.oldPackage = oldPackage;
-		}
-
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			informListener(ActionType.EXIT, oldPackage);
-			informListener(ActionType.ENTER, newPackage);
-		}
 	}
 }
