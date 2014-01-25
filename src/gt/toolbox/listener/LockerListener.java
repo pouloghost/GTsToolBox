@@ -2,7 +2,7 @@ package gt.toolbox.listener;
 
 import java.util.HashMap;
 
-import gt.toolbox.Context;
+import gt.toolbox.ExcutionContext;
 import android.content.ContextWrapper;
 import android.os.PowerManager.WakeLock;
 
@@ -14,6 +14,7 @@ public class LockerListener extends ActivityLaucheListener {
 	private static String TAG = "TAG";
 
 	public LockerListener(String packageName) {
+		super(packageName);
 		tag = packageName;
 	}
 
@@ -23,14 +24,14 @@ public class LockerListener extends ActivityLaucheListener {
 
 	@Override
 	public void onLaunch(ContextWrapper wrapper, String packageName,
-			Context context) {
+			ExcutionContext context) {
 		// TODO Auto-generated method stub
 		lock = BrightnessUtils.lockWake(wrapper, tag);
 	}
 
 	@Override
 	public void onExit(ContextWrapper wrapper, String packageName,
-			Context context) {
+			ExcutionContext context) {
 		// TODO Auto-generated method stub
 		BrightnessUtils.releaseWake(lock);
 	}
@@ -38,8 +39,14 @@ public class LockerListener extends ActivityLaucheListener {
 	@Override
 	public String getPara() {
 		// TODO Auto-generated method stub
-		return TAG + ":" + ListenerFactory.ObjectType.STRING.toString()
-				+ ":" + tag;
+		return TAG + ":" + ListenerFactory.ObjectType.STRING.toString() + ":"
+				+ tag;
+	}
+
+	@Override
+	public String getType() {
+		// TODO Auto-generated method stub
+		return ListenerFactory.ListenerType.WAKE_LOCK.toString();
 	}
 
 }

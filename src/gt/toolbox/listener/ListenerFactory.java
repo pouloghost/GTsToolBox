@@ -12,14 +12,15 @@ public class ListenerFactory {
 		INT, FLOAT, DOUBLE, BOOLEAN, STRING
 	}
 
-	public ActivityLaucheListener getListener(ListenerType type, String para) {
+	public static ActivityLaucheListener getListener(ListenerType type,
+			String packageName, String para) {
 		ActivityLaucheListener result = null;
 		switch (type) {
 		case BRIGHTNESS_AUTO:
-			result = new AutoBrightnessListener();
+			result = new AutoBrightnessListener(packageName);
 			break;
 		case BRIGHTNESS_MANUAL:
-			result = new BrightnessListener(parseParameters(para));
+			result = new BrightnessListener(parseParameters(para), packageName);
 			break;
 		case WAKE_LOCK:
 			result = new LockerListener(parseParameters(para));
@@ -28,7 +29,13 @@ public class ListenerFactory {
 		return result;
 	}
 
-	private HashMap<String, Object> parseParameters(String para) {
+	public static ActivityLaucheListener getListener(String type,
+			String packageName, String para) {
+		ListenerType listenerType = ListenerType.valueOf(type);
+		return getListener(listenerType, packageName, para);
+	}
+
+	private static HashMap<String, Object> parseParameters(String para) {
 		// the para is key:type:val;key:type:val;...form
 		// should regular expression instead
 		HashMap<String, Object> result = new HashMap<String, Object>();
@@ -40,7 +47,7 @@ public class ListenerFactory {
 		return result;
 	}
 
-	private Object getObject(String type, String val) {
+	private static Object getObject(String type, String val) {
 		// type is a enum of ObjectType
 		ObjectType objectType = ObjectType.valueOf(type);
 		Object result = null;

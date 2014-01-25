@@ -1,6 +1,6 @@
 package gt.toolbox.listener;
 
-import gt.toolbox.Context;
+import gt.toolbox.ExcutionContext;
 import android.content.ContextWrapper;
 import android.net.Uri;
 import android.provider.Settings;
@@ -9,13 +9,14 @@ public class AutoBrightnessListener extends ActivityLaucheListener {
 
 	private Uri uri;
 
-	public AutoBrightnessListener() {
+	public AutoBrightnessListener(String packageName) {
+		super(packageName);
 		uri = Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS);
 	}
 
 	@Override
 	public void onLaunch(ContextWrapper wrapper, String packageName,
-			Context context) {
+			ExcutionContext context) {
 		// TODO Auto-generated method stub
 		BrightnessUtils.setMode(wrapper,
 				Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC, uri);
@@ -23,7 +24,7 @@ public class AutoBrightnessListener extends ActivityLaucheListener {
 
 	@Override
 	public void onExit(ContextWrapper wrapper, String packageName,
-			Context context) {
+			ExcutionContext context) {
 		// TODO Auto-generated method stub
 		BrightnessUtils.setMode(wrapper,
 				Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC, uri);
@@ -33,6 +34,12 @@ public class AutoBrightnessListener extends ActivityLaucheListener {
 	public String getPara() {
 		// TODO Auto-generated method stub
 		return "";
+	}
+
+	@Override
+	public String getType() {
+		// TODO Auto-generated method stub
+		return ListenerFactory.ListenerType.BRIGHTNESS_AUTO.toString();
 	}
 
 }

@@ -29,7 +29,7 @@ public class TaskWatcherService extends Service {
 	private ActivityManager manager;
 	// commands for each event
 	private Hashtable<String, HashSet<ActivityLaucheListener>> listeners = new Hashtable<String, HashSet<ActivityLaucheListener>>();
-	private Context context = new Context();
+	private ExcutionContext context = new ExcutionContext();
 
 	// threading
 	private static int INTERVAL = 1000;
@@ -103,8 +103,10 @@ public class TaskWatcherService extends Service {
 	private void bindListeners() {
 		// TODO Auto-generated method stub
 		registerListener("gt.toolbox", new LockerListener("gt.toolbox"));
-		registerListener("com.bbk.launcher2", new BrightnessListener(1));
-		registerListener("com.android.launcher", new BrightnessListener(1));
+		registerListener("com.bbk.launcher2", new BrightnessListener(1,
+				"com.bbk.launcher2"));
+		registerListener("com.android.launcher", new BrightnessListener(1,
+				"com.android.launcher"));
 	}
 
 	@Override
