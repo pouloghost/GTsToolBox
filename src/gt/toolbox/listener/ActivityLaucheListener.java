@@ -25,12 +25,11 @@ public abstract class ActivityLaucheListener {
 		this.packageName = packageName;
 	}
 
-	public abstract void onLaunch(ContextWrapper wrapper, String packageName,
+	public abstract void onLaunch(ContextWrapper wrapper,
 			ExcutionContext context);
 
 	// before an old one is sent to the back
-	public abstract void onExit(ContextWrapper wrapper, String packageName,
-			ExcutionContext context);
+	public abstract void onExit(ContextWrapper wrapper, ExcutionContext context);
 
 	public abstract String getPara();
 }

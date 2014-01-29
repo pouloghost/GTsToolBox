@@ -12,7 +12,7 @@ public class BrightnessUtils {
 		try {
 			Settings.System.putInt(wrapper.getContentResolver(),
 					Settings.System.SCREEN_BRIGHTNESS_MODE, mode);
-			BrightnessUtils.notifyChange(uri, null);
+			BrightnessUtils.notifyChange(wrapper, uri, null);
 		} catch (Exception e) {
 			// TODO: handle exception
 			System.out.println(e);
@@ -20,8 +20,10 @@ public class BrightnessUtils {
 	}
 
 	// TODO needs a better solution
-	public static void notifyChange(Uri uri, ContentObserver observer) {
-		BrightnessUtils.notifyChange(uri, null);
+	public static void notifyChange(ContextWrapper wrapper, Uri uri,
+			ContentObserver observer) {
+
+		wrapper.getContentResolver().notifyChange(uri, observer);
 	}
 
 	public static WakeLock lockWake(ContextWrapper wrapper, String tag) {
@@ -44,6 +46,6 @@ public class BrightnessUtils {
 				Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL, uri);
 		Settings.System.putInt(wrapper.getContentResolver(),
 				Settings.System.SCREEN_BRIGHTNESS, brightness);
-		BrightnessUtils.notifyChange(uri, null);
+		BrightnessUtils.notifyChange(wrapper, uri, null);
 	}
 }

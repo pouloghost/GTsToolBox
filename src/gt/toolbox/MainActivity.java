@@ -1,5 +1,7 @@
 package gt.toolbox;
 
+import gt.toolbox.service.TaskExcutorService;
+import gt.toolbox.service.TaskWatcherService;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +17,8 @@ import android.widget.Button;
 
 public class MainActivity extends Activity {
 
-	private Intent i;
+	private Intent watcherIntent;
+	private Intent excutorIntent;
 	private Button stopButton;
 	private Button manualButton;
 	// -----------------------float--------------------
@@ -36,14 +39,12 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		i = new Intent(this, TaskWatcherService.class);
-
 		stopButton = (Button) findViewById(R.id.stopButton);
 		stopButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				stopService(i);
+				stopService(watcherIntent);
 			}
 		});
 		manualButton = (Button) findViewById(R.id.manualButton);
@@ -63,9 +64,13 @@ public class MainActivity extends Activity {
 			}
 		});
 
-		startService(i);
-
+		watcherIntent = new Intent(this, TaskWatcherService.class);
+		excutorIntent = new Intent(this, TaskExcutorService.class);
+		startService(watcherIntent);
+		startService(excutorIntent);
+		System.out.println("start in activity");
 		createFloatWindow(true);
+
 	}
 
 	@Override

@@ -23,15 +23,13 @@ public class LockerListener extends ActivityLaucheListener {
 	}
 
 	@Override
-	public void onLaunch(ContextWrapper wrapper, String packageName,
-			ExcutionContext context) {
+	public void onLaunch(ContextWrapper wrapper, ExcutionContext context) {
 		// TODO Auto-generated method stub
 		lock = BrightnessUtils.lockWake(wrapper, tag);
 	}
 
 	@Override
-	public void onExit(ContextWrapper wrapper, String packageName,
-			ExcutionContext context) {
+	public void onExit(ContextWrapper wrapper, ExcutionContext context) {
 		// TODO Auto-generated method stub
 		BrightnessUtils.releaseWake(lock);
 	}
