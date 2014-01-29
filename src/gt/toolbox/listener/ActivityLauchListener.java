@@ -3,7 +3,7 @@ package gt.toolbox.listener;
 import android.content.ContextWrapper;
 import gt.toolbox.ExcutionContext;
 
-public abstract class ActivityLaucheListener {
+public abstract class ActivityLauchListener {
 	// must have a constructor using a hashmap as parameter
 	// when a new task is brought to the front
 
@@ -21,7 +21,7 @@ public abstract class ActivityLaucheListener {
 	public abstract String getType();
 
 	// function part
-	public ActivityLaucheListener(String packageName) {
+	public ActivityLauchListener(String packageName) {
 		this.packageName = packageName;
 	}
 

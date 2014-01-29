@@ -5,7 +5,7 @@ import android.content.ContextWrapper;
 import android.net.Uri;
 import android.provider.Settings;
 
-public class AutoBrightnessListener extends ActivityLaucheListener {
+public class AutoBrightnessListener extends ActivityLauchListener {
 
 	private Uri uri;
 

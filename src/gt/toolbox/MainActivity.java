@@ -1,5 +1,8 @@
 package gt.toolbox;
 
+import gt.toolbox.db.DBManager;
+import gt.toolbox.listener.BrightnessListener;
+import gt.toolbox.listener.LockerListener;
 import gt.toolbox.service.TaskExcutorService;
 import gt.toolbox.service.TaskWatcherService;
 import android.app.Activity;
@@ -21,6 +24,8 @@ public class MainActivity extends Activity {
 	private Intent excutorIntent;
 	private Button stopButton;
 	private Button manualButton;
+
+	private DBManager db;
 	// -----------------------float--------------------
 	private Button goBigButton;
 	private Button goSmallButton;
@@ -38,6 +43,11 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		db = new DBManager(this);
+
+		db.add(new LockerListener("gt.toolbox"));
+		db.add(new BrightnessListener(1, "com.android.launcher"));
+		db.add(new BrightnessListener(1, "com.bbk.launcher2"));
 
 		stopButton = (Button) findViewById(R.id.stopButton);
 		stopButton.setOnClickListener(new View.OnClickListener() {

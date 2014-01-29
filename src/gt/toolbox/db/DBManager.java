@@ -3,7 +3,7 @@ package gt.toolbox.db;
 import java.util.ArrayList;
 import java.util.List;
 
-import gt.toolbox.listener.ActivityLaucheListener;
+import gt.toolbox.listener.ActivityLauchListener;
 import gt.toolbox.listener.ListenerFactory;
 import android.content.Context;
 import android.database.Cursor;
@@ -18,33 +18,37 @@ public class DBManager {
 		db = helper.getWritableDatabase();
 	}
 
-	public void add(ActivityLaucheListener listener) {
+	public void add(ActivityLauchListener listener) {
 		db.execSQL("INSERT INTO " + DBHelper.DBNAME + " VALUES(null,?,?,?)",
 				new Object[] { listener.getPackageName(), listener.getType(),
 						listener.getPara() });
 	}
 
-	public void delete(ActivityLaucheListener listener) {
-		db.execSQL("DELETE FROM " + DBHelper.DBNAME
-				+ " WHERE package=? AND type=?",
-				new Object[] { listener.getPackageName(), listener.getType() });
+	public void delete(ActivityLauchListener listener) {
+		db.execSQL("DELETE FROM " + DBHelper.DBNAME + " WHERE "
+				+ DBHelper.DBColumn.pack.toString() + "=? AND "
+				+ DBHelper.DBColumn.type.toString() + "=?", new Object[] {
+				listener.getPackageName(), listener.getType() });
 	}
 
-	public void updateParameter(ActivityLaucheListener listener) {
-		db.execSQL("UPDATE " + DBHelper.DBNAME
-				+ " SET para=? WHERE package=? AND type=?",
+	public void updateParameter(ActivityLauchListener listener) {
+		db.execSQL("UPDATE " + DBHelper.DBNAME + " SET "
+				+ DBHelper.DBColumn.para.toString() + "=? WHERE "
+				+ DBHelper.DBColumn.pack.toString() + "=? AND "
+				+ DBHelper.DBColumn.type.toString() + "=?",
 				new Object[] { listener.getPara(), listener.getPackageName(),
 						listener.getType() });
 	}
 
-	public List<ActivityLaucheListener> query() {
-		ArrayList<ActivityLaucheListener> list = new ArrayList<ActivityLaucheListener>();
+	public List<ActivityLauchListener> query() {
+		ArrayList<ActivityLauchListener> list = new ArrayList<ActivityLauchListener>();
 		Cursor c = queryCursor();
 		while (c.moveToNext()) {
-			list.add(ListenerFactory.getListener(
-					c.getString(c.getColumnIndex("type")),
-					c.getString(c.getColumnIndex("packageName")),
-					c.getString(c.getColumnIndex("para"))));
+			list.add(ListenerFactory.getListener(c.getString(c
+					.getColumnIndex(DBHelper.DBColumn.type.toString())), c
+					.getString(c.getColumnIndex(DBHelper.DBColumn.pack
+							.toString())), c.getString(c
+					.getColumnIndex(DBHelper.DBColumn.para.toString()))));
 		}
 		c.close();
 		return list;

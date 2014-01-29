@@ -6,7 +6,7 @@ import gt.toolbox.ExcutionContext;
 import android.content.ContextWrapper;
 import android.os.PowerManager.WakeLock;
 
-public class LockerListener extends ActivityLaucheListener {
+public class LockerListener extends ActivityLauchListener {
 
 	private WakeLock lock = null;
 	private String tag = null;

@@ -6,6 +6,10 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBHelper extends SQLiteOpenHelper {
+	// column names
+	public static enum DBColumn {
+		pack, type, para
+	}
 
 	private static final String DATABASE_FILE_NAME = "listeners.db";
 	private static final int DATABASE_VERSION = 1;
@@ -24,9 +28,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
-		db.execSQL("CREATE TABLE IF NOT EXIST "
-				+ DBNAME
-				+ " (_id INTERGER PRIMARY KEY AUTOINCREMENT, package VARCHAR, type VARCHAR, para VARCHAR)");
+		db.execSQL("CREATE TABLE IF NOT EXISTS " + DBNAME
+				+ "(_id INTEGER PRIMARY KEY AUTOINCREMENT, "
+				+ DBColumn.pack.toString() + " VARCHAR, "
+				+ DBColumn.type.toString() + " VARCHAR, "
+				+ DBColumn.para.toString() + " VARCHAR)");
 	}
 
 	@Override

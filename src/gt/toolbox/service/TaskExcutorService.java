@@ -1,13 +1,13 @@
 package gt.toolbox.service;
 
 import gt.toolbox.ExcutionContext;
-import gt.toolbox.listener.ActivityLaucheListener;
-import gt.toolbox.listener.BrightnessListener;
-import gt.toolbox.listener.LockerListener;
+import gt.toolbox.db.DBManager;
+import gt.toolbox.listener.ActivityLauchListener;
 
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -16,13 +16,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 
+//excute tasks based on the broadcast by watcher
 public class TaskExcutorService extends Service {
 	public static enum ActionType {
 		ENTER, EXIT
 	};
 
+	private DBManager db;
+
 	// commands for each event
-	private Hashtable<String, HashSet<ActivityLaucheListener>> listeners = new Hashtable<String, HashSet<ActivityLaucheListener>>();
+	private Hashtable<String, HashSet<ActivityLauchListener>> listeners = new Hashtable<String, HashSet<ActivityLauchListener>>();
 	private ExcutionContext excutionContext;
 	private BroadcastReceiver br = new BroadcastReceiver() {
 
@@ -46,6 +49,8 @@ public class TaskExcutorService extends Service {
 		filter.addAction(TaskWatcherService.ACTION_TAG);
 		registerReceiver(br, filter);
 
+		db = new DBManager(this);
+
 		bindListeners();
 		System.out.println("done");
 	}
@@ -66,27 +71,25 @@ public class TaskExcutorService extends Service {
 
 	private void bindListeners() {
 		// TODO Auto-generated method stub
-		registerListener("gt.toolbox", new LockerListener("gt.toolbox"));
-		registerListener("com.bbk.launcher2", new BrightnessListener(1,
-				"com.bbk.launcher2"));
-		registerListener("com.android.launcher", new BrightnessListener(1,
-				"com.android.launcher"));
+		List<ActivityLauchListener> list = db.query();
+		for (ActivityLauchListener listener : list) {
+			registerListener(listener);
+		}
 	}
 
 	// -----listeners
-	public void registerListener(String packageName,
-			ActivityLaucheListener listener) {
+	public void registerListener(ActivityLauchListener listener) {
+		String packageName = listener.getPackageName();
 		if (!listeners.containsKey(packageName)) {
-			listeners.put(packageName, new HashSet<ActivityLaucheListener>());
+			listeners.put(packageName, new HashSet<ActivityLauchListener>());
 		}
 
 		listeners.get(packageName).add(listener);
 	}
 
-	public void unregisterListener(String packageName,
-			ActivityLaucheListener listener) {
-		HashSet<ActivityLaucheListener> listenerSet = listeners
-				.get(packageName);
+	public void unregisterListener(ActivityLauchListener listener) {
+		String packageName = listener.getPackageName();
+		HashSet<ActivityLauchListener> listenerSet = listeners.get(packageName);
 		listenerSet.remove(listener);
 
 		if (listenerSet.isEmpty()) {
@@ -107,11 +110,11 @@ public class TaskExcutorService extends Service {
 			packageName = context.getOldPackage();
 			break;
 		}
-		HashSet<ActivityLaucheListener> set = listeners.get(packageName);
+		HashSet<ActivityLauchListener> set = listeners.get(packageName);
 		if (set == null) {
 			return;
 		}
-		Iterator<ActivityLaucheListener> iterator = set.iterator();
+		Iterator<ActivityLauchListener> iterator = set.iterator();
 		while (iterator.hasNext()) {
 			switch (type) {
 			case ENTER:

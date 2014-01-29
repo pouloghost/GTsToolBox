@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.IBinder;
 
+//watching the changes in tasks and broadcast the change
 public class TaskWatcherService extends Service {
 
 	public static final String CONTEXT = "gt.task.context";
@@ -66,6 +67,7 @@ public class TaskWatcherService extends Service {
 						String currentPackage = activity.getPackageName();
 
 						if (!currentPackage.equals(lastPackage)) {
+							// the context needed by the listeners
 							intent.putExtra(CONTEXT, new ExcutionContext(
 									currentPackage, lastPackage));
 

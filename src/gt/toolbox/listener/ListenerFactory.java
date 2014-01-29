@@ -12,9 +12,9 @@ public class ListenerFactory {
 		INT, FLOAT, DOUBLE, BOOLEAN, STRING
 	}
 
-	public static ActivityLaucheListener getListener(ListenerType type,
+	public static ActivityLauchListener getListener(ListenerType type,
 			String packageName, String para) {
-		ActivityLaucheListener result = null;
+		ActivityLauchListener result = null;
 		switch (type) {
 		case BRIGHTNESS_AUTO:
 			result = new AutoBrightnessListener(packageName);
@@ -29,7 +29,7 @@ public class ListenerFactory {
 		return result;
 	}
 
-	public static ActivityLaucheListener getListener(String type,
+	public static ActivityLauchListener getListener(String type,
 			String packageName, String para) {
 		ListenerType listenerType = ListenerType.valueOf(type);
 		return getListener(listenerType, packageName, para);
