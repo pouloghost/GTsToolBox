@@ -10,6 +10,7 @@ import android.provider.Settings;
 public class BrightnessListener extends ActivityLauchListener {
 
 	private int brightness;
+
 	private Uri uri;
 
 	private static String BRIGHTNESS = "BRIGHTNESS";
@@ -48,5 +49,13 @@ public class BrightnessListener extends ActivityLauchListener {
 	public String getType() {
 		// TODO Auto-generated method stub
 		return ListenerFactory.ListenerType.BRIGHTNESS_MANUAL.toString();
+	}
+
+	public int getBrightness() {
+		return brightness;
+	}
+
+	public void setBrightness(int brightness) {
+		this.brightness = brightness;
 	}
 }

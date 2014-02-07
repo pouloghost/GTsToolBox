@@ -3,6 +3,9 @@ package gt.toolbox.service;
 import gt.toolbox.ExcutionContext;
 import gt.toolbox.db.DBManager;
 import gt.toolbox.listener.ActivityLauchListener;
+import gt.toolbox.listener.BrightnessListener;
+import gt.toolbox.listener.ListenerFactory.ListenerType;
+import gt.toolbox.listener.LockerListener;
 
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -22,21 +25,65 @@ public class TaskExcutorService extends Service {
 		ENTER, EXIT
 	};
 
+	public static enum MessageType {
+		TASK_CHANGE, DIRECT_MODIFY, SAVE_LISTENER
+	}
+
+	public static final String MESSAGE_TYPE = "message type";
+	public static final String LISTENER_TYPE = "listener type";
+
 	private DBManager db;
 
 	// commands for each event
 	private Hashtable<String, HashSet<ActivityLauchListener>> listeners = new Hashtable<String, HashSet<ActivityLauchListener>>();
 	private ExcutionContext excutionContext;
+	private BrightnessListener brightness;
+	private LockerListener locker;
+
 	private BroadcastReceiver br = new BroadcastReceiver() {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
-			excutionContext = intent
-					.getParcelableExtra(TaskWatcherService.CONTEXT);
-			informListener(ActionType.EXIT, excutionContext);
-			informListener(ActionType.ENTER, excutionContext);
-			System.out.println(excutionContext.toString());
+			MessageType type = MessageType.valueOf(intent
+					.getStringExtra(MESSAGE_TYPE));
+			switch (type) {
+			case TASK_CHANGE:
+				excutionContext = intent
+						.getParcelableExtra(TaskWatcherService.CONTEXT);
+				informListener(ActionType.EXIT, excutionContext);
+				informListener(ActionType.ENTER, excutionContext);
+				System.out.println(excutionContext.toString());
+				// clear direct modify listeners
+				brightness = null;
+				locker = null;
+				break;
+			case DIRECT_MODIFY:
+				ListenerType listenerType = ListenerType.valueOf(intent
+						.getStringExtra(LISTENER_TYPE));
+				String pkg = TaskExcutorService.this.excutionContext
+						.getNewPackage();
+				TaskExcutorService service = TaskExcutorService.this;
+				switch (listenerType) {
+				case BRIGHTNESS_MANUAL:
+					int value = intent.getIntExtra(LISTENER_TYPE, 1);
+					service.brightness = new BrightnessListener(value, pkg);
+					service.brightness.onLaunch(service, excutionContext);
+					break;
+				case WAKE_LOCK:
+					service.locker = new LockerListener(pkg);
+					service.locker.onLaunch(service, excutionContext);
+					break;
+				case BRIGHTNESS_AUTO:
+					break;
+				default:
+					break;
+				}
+				break;
+			case SAVE_LISTENER:
+				TaskExcutorService.this.saveListeners();
+				break;
+			}
 		}
 	};
 
@@ -129,6 +176,15 @@ public class TaskExcutorService extends Service {
 				break;
 			}
 
+		}
+	}
+
+	private void saveListeners() {
+		if (brightness != null) {
+			db.updateParameter(brightness);
+		}
+		if (locker != null) {
+			db.updateParameter(locker);
 		}
 	}
 

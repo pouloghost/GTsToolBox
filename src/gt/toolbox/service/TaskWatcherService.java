@@ -70,7 +70,10 @@ public class TaskWatcherService extends Service {
 							// the context needed by the listeners
 							intent.putExtra(CONTEXT, new ExcutionContext(
 									currentPackage, lastPackage));
-
+							// differ from the direct modify from float window
+							intent.putExtra(TaskExcutorService.MESSAGE_TYPE,
+									TaskExcutorService.MessageType.TASK_CHANGE
+											.toString());
 							sendBroadcast(intent);
 							lastPackage = currentPackage;
 							System.out.println("watcher " + lastPackage);

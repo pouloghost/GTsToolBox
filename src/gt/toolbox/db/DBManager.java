@@ -32,12 +32,20 @@ public class DBManager {
 	}
 
 	public void updateParameter(ActivityLauchListener listener) {
-		db.execSQL("UPDATE " + DBHelper.DBNAME + " SET "
-				+ DBHelper.DBColumn.para.toString() + "=? WHERE "
-				+ DBHelper.DBColumn.pack.toString() + "=? AND "
-				+ DBHelper.DBColumn.type.toString() + "=?",
-				new Object[] { listener.getPara(), listener.getPackageName(),
+		String where = " WHERE " + DBHelper.DBColumn.pack.toString()
+				+ "=? AND " + DBHelper.DBColumn.type.toString() + "=?";
+		Cursor c = db.rawQuery("SELECT * FROM " + DBHelper.DBNAME + where,
+				new String[] { listener.getPara(), listener.getPackageName(),
 						listener.getType() });
+		if (c.getCount() != 0) {
+			db.execSQL(
+					"UPDATE " + DBHelper.DBNAME + " SET "
+							+ DBHelper.DBColumn.para.toString() + "=?" + where,
+					new Object[] { listener.getPara(),
+							listener.getPackageName(), listener.getType() });
+		} else {
+			add(listener);
+		}
 	}
 
 	public List<ActivityLauchListener> query() {

@@ -4,5 +4,8 @@
     <string name="app_name">GT\'s ToolBox</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="lock">Lock</string>
+    <string name="go_small">&gt;</string>
+    <string name="go_big">&lt;</string>
 
 </resources>
