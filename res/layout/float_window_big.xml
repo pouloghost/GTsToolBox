@@ -19,10 +19,19 @@
         android:text="@string/go_small" />
 
     <SeekBar
-        android:id="@+id/lightSeekBar"
+        android:id="@+id/brightSeekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/goSmallButton" />
+        android:layout_below="@id/goSmallButton"
+        android:max="255" />
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/brightSeekBar"
+        android:layout_centerHorizontal="true"
+        android:text="@string/save" />
 
 </RelativeLayout>

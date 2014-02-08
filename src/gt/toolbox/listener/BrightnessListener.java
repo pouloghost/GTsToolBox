@@ -13,7 +13,7 @@ public class BrightnessListener extends ActivityLauchListener {
 
 	private Uri uri;
 
-	private static String BRIGHTNESS = "BRIGHTNESS";
+	public static String BRIGHTNESS = "BRIGHTNESS";
 
 	public BrightnessListener(int brightness, String packageName) {
 		super(packageName);

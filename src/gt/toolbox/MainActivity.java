@@ -2,9 +2,12 @@ package gt.toolbox;
 
 import gt.toolbox.db.DBManager;
 import gt.toolbox.listener.BrightnessListener;
+import gt.toolbox.listener.BrightnessUtils;
+import gt.toolbox.listener.ListenerFactory.ListenerType;
 import gt.toolbox.listener.LockerListener;
 import gt.toolbox.service.TaskExcutorService;
 import gt.toolbox.service.TaskWatcherService;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +20,11 @@ import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 public class MainActivity extends Activity {
 
@@ -27,8 +35,6 @@ public class MainActivity extends Activity {
 
 	private DBManager db;
 	// -----------------------float--------------------
-	private Button goBigButton;
-	private Button goSmallButton;
 	private View floatView;
 
 	private WindowManager wm;
@@ -39,15 +45,16 @@ public class MainActivity extends Activity {
 	private float statusBar = 30;
 	private WindowManager.LayoutParams layoutParams;
 
+	private Intent changeIntent = new Intent(
+			TaskExcutorService.MessageType.DIRECT_MODIFY.toString());
+	private Intent saveIntent = new Intent(
+			TaskExcutorService.MessageType.SAVE_LISTENER.toString());
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		db = new DBManager(this);
-
-		db.add(new LockerListener("gt.toolbox"));
-		db.add(new BrightnessListener(1, "com.android.launcher"));
-		db.add(new BrightnessListener(1, "com.bbk.launcher2"));
 
 		stopButton = (Button) findViewById(R.id.stopButton);
 		stopButton.setOnClickListener(new View.OnClickListener() {
@@ -121,13 +128,11 @@ public class MainActivity extends Activity {
 	}
 
 	private void attatchSmall() {
-		goSmallButton = null;
-
 		floatView = View.inflate(getApplicationContext(),
 				R.layout.float_window_small, null);
 		wm.addView(floatView, layoutParams);
 		wm.updateViewLayout(floatView, layoutParams);
-		goBigButton = (Button) floatView.findViewById(R.id.goBigButton);
+		Button goBigButton = (Button) floatView.findViewById(R.id.goBigButton);
 		goBigButton.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -139,14 +144,15 @@ public class MainActivity extends Activity {
 		});
 	}
 
+	@SuppressLint("NewApi")
 	private void attatchBig() {
-		goBigButton = null;
-
 		floatView = View.inflate(getApplicationContext(),
 				R.layout.float_window_big, null);
 		wm.addView(floatView, layoutParams);
 		wm.updateViewLayout(floatView, layoutParams);
-		goSmallButton = (Button) floatView.findViewById(R.id.goSmallButton);
+		// bind listeners
+		Button goSmallButton = (Button) floatView
+				.findViewById(R.id.goSmallButton);
 		goSmallButton.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -154,6 +160,57 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 				wm.removeView(floatView);
 				attatchSmall();
+			}
+		});
+		Button saveButton = (Button) floatView.findViewById(R.id.saveButton);
+		saveButton.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				sendBroadcast(saveIntent);
+			}
+		});
+		SeekBar brightSeekbar = (SeekBar) floatView
+				.findViewById(R.id.brightSeekBar);
+		brightSeekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				// TODO Auto-generated method stub
+				changeIntent.putExtra(TaskExcutorService.LISTENER_TYPE,
+						ListenerType.BRIGHTNESS_MANUAL.toString());
+				changeIntent.putExtra(BrightnessListener.BRIGHTNESS, progress);
+				sendBroadcast(changeIntent);
+			}
+		});
+		brightSeekbar.setProgress(BrightnessUtils.getBrightness(this));
+		CheckBox lockCheckBox = (CheckBox) floatView
+				.findViewById(R.id.lockCheckBox);
+		lockCheckBox.setChecked(BrightnessUtils.isLocked(this));
+		lockCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				// TODO Auto-generated method stub
+				changeIntent.putExtra(TaskExcutorService.LISTENER_TYPE,
+						ListenerType.WAKE_LOCK.toString());
+				changeIntent.putExtra(LockerListener.LOCK_ON, isChecked);
+				sendBroadcast(changeIntent);
 			}
 		});
 	}

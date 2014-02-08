@@ -13,14 +13,14 @@ public class TaskWatcherService extends Service {
 
 	public static final String CONTEXT = "gt.task.context";
 
-	public static final String ACTION_TAG = "gt.task.launched";
 	// singleton like access
 	private static TaskWatcherService self = null;
 
 	// observe task change
 	private String lastPackage = "";
 	private ActivityManager manager;
-	private Intent intent = new Intent(ACTION_TAG);
+	private Intent intent = new Intent(
+			TaskExcutorService.MessageType.TASK_CHANGE.toString());
 
 	// threading
 	private static int INTERVAL = 1000;
@@ -71,9 +71,6 @@ public class TaskWatcherService extends Service {
 							intent.putExtra(CONTEXT, new ExcutionContext(
 									currentPackage, lastPackage));
 							// differ from the direct modify from float window
-							intent.putExtra(TaskExcutorService.MESSAGE_TYPE,
-									TaskExcutorService.MessageType.TASK_CHANGE
-											.toString());
 							sendBroadcast(intent);
 							lastPackage = currentPackage;
 							System.out.println("watcher " + lastPackage);

@@ -7,5 +7,6 @@
     <string name="lock">Lock</string>
     <string name="go_small">&gt;</string>
     <string name="go_big">&lt;</string>
+    <string name="save">Save</string>
 
 </resources>

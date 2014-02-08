@@ -13,6 +13,8 @@ public class LockerListener extends ActivityLauchListener {
 
 	private static String TAG = "TAG";
 
+	public static final String LOCK_ON = "lock on";
+
 	public LockerListener(String packageName) {
 		super(packageName);
 		tag = packageName;

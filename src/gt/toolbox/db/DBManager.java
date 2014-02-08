@@ -19,6 +19,9 @@ public class DBManager {
 	}
 
 	public void add(ActivityLauchListener listener) {
+		if (exists(listener)) {
+			delete(listener);
+		}
 		db.execSQL("INSERT INTO " + DBHelper.DBNAME + " VALUES(null,?,?,?)",
 				new Object[] { listener.getPackageName(), listener.getType(),
 						listener.getPara() });
@@ -32,15 +35,13 @@ public class DBManager {
 	}
 
 	public void updateParameter(ActivityLauchListener listener) {
-		String where = " WHERE " + DBHelper.DBColumn.pack.toString()
-				+ "=? AND " + DBHelper.DBColumn.type.toString() + "=?";
-		Cursor c = db.rawQuery("SELECT * FROM " + DBHelper.DBNAME + where,
-				new String[] { listener.getPara(), listener.getPackageName(),
-						listener.getType() });
-		if (c.getCount() != 0) {
+		if (exists(listener)) {
 			db.execSQL(
 					"UPDATE " + DBHelper.DBNAME + " SET "
-							+ DBHelper.DBColumn.para.toString() + "=?" + where,
+							+ DBHelper.DBColumn.para.toString() + "=?"
+							+ " WHERE " + DBHelper.DBColumn.pack.toString()
+							+ "=? AND " + DBHelper.DBColumn.type.toString()
+							+ "=?",
 					new Object[] { listener.getPara(),
 							listener.getPackageName(), listener.getType() });
 		} else {
@@ -65,5 +66,13 @@ public class DBManager {
 	public Cursor queryCursor() {
 		Cursor c = db.rawQuery("SELECT * FROM " + DBHelper.DBNAME, null);
 		return c;
+	}
+
+	public boolean exists(ActivityLauchListener listener) {
+		Cursor c = db.rawQuery("SELECT * FROM " + DBHelper.DBNAME + " WHERE "
+				+ DBHelper.DBColumn.pack.toString() + "=? AND "
+				+ DBHelper.DBColumn.type.toString() + "=?", new String[] {
+				listener.getPackageName(), listener.getType() });
+		return c.getCount() != 0;
 	}
 }

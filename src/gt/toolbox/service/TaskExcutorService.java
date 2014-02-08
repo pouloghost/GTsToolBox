@@ -29,7 +29,6 @@ public class TaskExcutorService extends Service {
 		TASK_CHANGE, DIRECT_MODIFY, SAVE_LISTENER
 	}
 
-	public static final String MESSAGE_TYPE = "message type";
 	public static final String LISTENER_TYPE = "listener type";
 
 	private DBManager db;
@@ -45,8 +44,7 @@ public class TaskExcutorService extends Service {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
-			MessageType type = MessageType.valueOf(intent
-					.getStringExtra(MESSAGE_TYPE));
+			MessageType type = MessageType.valueOf(intent.getAction());
 			switch (type) {
 			case TASK_CHANGE:
 				excutionContext = intent
@@ -54,9 +52,7 @@ public class TaskExcutorService extends Service {
 				informListener(ActionType.EXIT, excutionContext);
 				informListener(ActionType.ENTER, excutionContext);
 				System.out.println(excutionContext.toString());
-				// clear direct modify listeners
-				brightness = null;
-				locker = null;
+				clearDirectListeners();
 				break;
 			case DIRECT_MODIFY:
 				ListenerType listenerType = ListenerType.valueOf(intent
@@ -66,13 +62,23 @@ public class TaskExcutorService extends Service {
 				TaskExcutorService service = TaskExcutorService.this;
 				switch (listenerType) {
 				case BRIGHTNESS_MANUAL:
-					int value = intent.getIntExtra(LISTENER_TYPE, 1);
-					service.brightness = new BrightnessListener(value, pkg);
-					service.brightness.onLaunch(service, excutionContext);
+					int value = intent.getIntExtra(
+							BrightnessListener.BRIGHTNESS, 1);
+					brightness = new BrightnessListener(value, pkg);
+					brightness.onLaunch(service, excutionContext);
 					break;
 				case WAKE_LOCK:
-					service.locker = new LockerListener(pkg);
-					service.locker.onLaunch(service, excutionContext);
+					boolean boolVal = intent.getBooleanExtra(
+							LockerListener.LOCK_ON, false);
+					locker = new LockerListener(pkg);
+					if (boolVal) {
+						locker.onLaunch(service, excutionContext);
+						System.out.println("keep wake");
+					} else {
+						locker.onExit(service, excutionContext);
+						locker = null;
+						System.out.println("release lock");
+					}
 					break;
 				case BRIGHTNESS_AUTO:
 					break;
@@ -81,7 +87,8 @@ public class TaskExcutorService extends Service {
 				}
 				break;
 			case SAVE_LISTENER:
-				TaskExcutorService.this.saveListeners();
+				saveListeners();
+				clearDirectListeners();
 				break;
 			}
 		}
@@ -93,7 +100,9 @@ public class TaskExcutorService extends Service {
 		super.onCreate();
 		System.out.println("create");
 		IntentFilter filter = new IntentFilter();
-		filter.addAction(TaskWatcherService.ACTION_TAG);
+		filter.addAction(MessageType.DIRECT_MODIFY.toString());
+		filter.addAction(MessageType.TASK_CHANGE.toString());
+		filter.addAction(MessageType.SAVE_LISTENER.toString());
 		registerReceiver(br, filter);
 
 		db = new DBManager(this);
@@ -182,9 +191,37 @@ public class TaskExcutorService extends Service {
 	private void saveListeners() {
 		if (brightness != null) {
 			db.updateParameter(brightness);
+			remove(brightness);
 		}
 		if (locker != null) {
 			db.updateParameter(locker);
+			remove(locker);
+		}
+	}
+
+	private void clearDirectListeners() {
+		// clear direct modify listeners
+		brightness = null;
+		locker = null;
+	}
+
+	private void remove(ActivityLauchListener listener) {
+		String pkg = listener.getPackageName();
+		String type = listener.getType();
+		HashSet<ActivityLauchListener> set = listeners.get(pkg);
+		if (set != null) {
+			ActivityLauchListener toDel = null;
+			Iterator<ActivityLauchListener> iterator = set.iterator();
+			while (iterator.hasNext()) {
+				ActivityLauchListener now = iterator.next();
+				if (now.getType().equals(type)) {
+					toDel = now;
+					break;
+				}
+			}
+			if (toDel != null) {
+				set.remove(toDel);
+			}
 		}
 	}
 
