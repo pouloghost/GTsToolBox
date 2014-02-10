@@ -3,10 +3,9 @@ package gt.toolbox.service;
 import gt.toolbox.ExcutionContext;
 import gt.toolbox.db.DBManager;
 import gt.toolbox.listener.ActivityLauchListener;
-import gt.toolbox.listener.BrightnessListener;
-import gt.toolbox.listener.ListenerFactory.ListenerType;
-import gt.toolbox.listener.LockerListener;
+import gt.toolbox.listener.ListenerFactory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -29,15 +28,11 @@ public class TaskExcutorService extends Service {
 		TASK_CHANGE, DIRECT_MODIFY, SAVE_LISTENER
 	}
 
-	public static final String LISTENER_TYPE = "listener type";
-
 	private DBManager db;
 
 	// commands for each event
 	private Hashtable<String, HashSet<ActivityLauchListener>> listeners = new Hashtable<String, HashSet<ActivityLauchListener>>();
 	private ExcutionContext excutionContext;
-	private BrightnessListener brightness;
-	private LockerListener locker;
 
 	private BroadcastReceiver br = new BroadcastReceiver() {
 
@@ -52,43 +47,28 @@ public class TaskExcutorService extends Service {
 				informListener(ActionType.EXIT, excutionContext);
 				informListener(ActionType.ENTER, excutionContext);
 				System.out.println(excutionContext.toString());
-				clearDirectListeners();
+				ListenerFactory.clearDirectModifies();
 				break;
 			case DIRECT_MODIFY:
-				ListenerType listenerType = ListenerType.valueOf(intent
-						.getStringExtra(LISTENER_TYPE));
 				String pkg = TaskExcutorService.this.excutionContext
 						.getNewPackage();
 				TaskExcutorService service = TaskExcutorService.this;
-				switch (listenerType) {
-				case BRIGHTNESS_MANUAL:
-					int value = intent.getIntExtra(
-							BrightnessListener.BRIGHTNESS, 1);
-					brightness = new BrightnessListener(value, pkg);
-					brightness.onLaunch(service, excutionContext);
-					break;
-				case WAKE_LOCK:
-					boolean boolVal = intent.getBooleanExtra(
-							LockerListener.LOCK_ON, false);
-					locker = new LockerListener(pkg);
-					if (boolVal) {
-						locker.onLaunch(service, excutionContext);
-						System.out.println("keep wake");
-					} else {
-						locker.onExit(service, excutionContext);
-						locker = null;
-						System.out.println("release lock");
-					}
-					break;
-				case BRIGHTNESS_AUTO:
-					break;
-				default:
-					break;
+				// this stores a return value of boolean
+				// whether use launch or exit
+				ArrayList<Boolean> launch = new ArrayList<Boolean>();
+				ActivityLauchListener listener = ListenerFactory
+						.addDirectModify(intent, pkg, launch);
+				boolean useLaunch = launch.get(0).booleanValue();
+				// do the modify
+				if (useLaunch) {
+					listener.onLaunch(service, excutionContext);
+				} else {
+					listener.onExit(service, excutionContext);
 				}
 				break;
 			case SAVE_LISTENER:
 				saveListeners();
-				clearDirectListeners();
+				ListenerFactory.clearDirectModifies();
 				break;
 			}
 		}
@@ -189,20 +169,12 @@ public class TaskExcutorService extends Service {
 	}
 
 	private void saveListeners() {
-		if (brightness != null) {
-			db.updateParameter(brightness);
-			remove(brightness);
+		ArrayList<ActivityLauchListener> directs = ListenerFactory
+				.getDirectModifies();
+		for (ActivityLauchListener listener : directs) {
+			db.updateParameter(listener);
+			remove(listener);
 		}
-		if (locker != null) {
-			db.updateParameter(locker);
-			remove(locker);
-		}
-	}
-
-	private void clearDirectListeners() {
-		// clear direct modify listeners
-		brightness = null;
-		locker = null;
 	}
 
 	private void remove(ActivityLauchListener listener) {

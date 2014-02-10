@@ -1,8 +1,13 @@
 package gt.toolbox.listener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.content.Intent;
+
 public class ListenerFactory {
+
+	public static final String LISTENER_TYPE = "listener type";
 
 	public static enum ListenerType {
 		BRIGHTNESS_AUTO, BRIGHTNESS_MANUAL, WAKE_LOCK
@@ -11,6 +16,8 @@ public class ListenerFactory {
 	public static enum ObjectType {
 		INT, FLOAT, DOUBLE, BOOLEAN, STRING
 	}
+
+	private static ArrayList<ActivityLauchListener> listeners = new ArrayList<ActivityLauchListener>();
 
 	public static ActivityLauchListener getListener(ListenerType type,
 			String packageName, String para) {
@@ -33,6 +40,42 @@ public class ListenerFactory {
 			String packageName, String para) {
 		ListenerType listenerType = ListenerType.valueOf(type);
 		return getListener(listenerType, packageName, para);
+	}
+
+	public static ActivityLauchListener addDirectModify(Intent intent,
+			String pkg, ArrayList<Boolean> launch) {
+		launch.clear();
+		ListenerType listenerType = ListenerType.valueOf(intent
+				.getStringExtra(LISTENER_TYPE));
+		ActivityLauchListener listener = null;
+		switch (listenerType) {
+		case BRIGHTNESS_MANUAL:
+			int value = intent.getIntExtra(BrightnessListener.BRIGHTNESS, 1);
+			listener = new BrightnessListener(value, pkg);
+			launch.add(true);
+			listeners.add(listener);
+			break;
+		case WAKE_LOCK:
+			boolean boolVal = intent.getBooleanExtra(LockerListener.LOCK_ON,
+					false);
+			listener = new LockerListener(pkg);
+			launch.add(boolVal);
+			listeners.add(listener);
+			break;
+		case BRIGHTNESS_AUTO:
+			break;
+		default:
+			break;
+		}
+		return listener;
+	}
+
+	public static ArrayList<ActivityLauchListener> getDirectModifies() {
+		return listeners;
+	}
+
+	public static void clearDirectModifies() {
+		listeners = new ArrayList<ActivityLauchListener>();
 	}
 
 	private static HashMap<String, Object> parseParameters(String para) {

@@ -3,6 +3,7 @@ package gt.toolbox;
 import gt.toolbox.db.DBManager;
 import gt.toolbox.listener.BrightnessListener;
 import gt.toolbox.listener.BrightnessUtils;
+import gt.toolbox.listener.ListenerFactory;
 import gt.toolbox.listener.ListenerFactory.ListenerType;
 import gt.toolbox.listener.LockerListener;
 import gt.toolbox.service.TaskExcutorService;
@@ -191,7 +192,7 @@ public class MainActivity extends Activity {
 			public void onProgressChanged(SeekBar seekBar, int progress,
 					boolean fromUser) {
 				// TODO Auto-generated method stub
-				changeIntent.putExtra(TaskExcutorService.LISTENER_TYPE,
+				changeIntent.putExtra(ListenerFactory.LISTENER_TYPE,
 						ListenerType.BRIGHTNESS_MANUAL.toString());
 				changeIntent.putExtra(BrightnessListener.BRIGHTNESS, progress);
 				sendBroadcast(changeIntent);
@@ -207,7 +208,7 @@ public class MainActivity extends Activity {
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				// TODO Auto-generated method stub
-				changeIntent.putExtra(TaskExcutorService.LISTENER_TYPE,
+				changeIntent.putExtra(ListenerFactory.LISTENER_TYPE,
 						ListenerType.WAKE_LOCK.toString());
 				changeIntent.putExtra(LockerListener.LOCK_ON, isChecked);
 				sendBroadcast(changeIntent);
