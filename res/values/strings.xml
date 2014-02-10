@@ -5,8 +5,8 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="lock">Lock</string>
-    <string name="go_small">&gt;</string>
-    <string name="go_big">&lt;</string>
+    <string name="go_small">-</string>
+    <string name="go_big">+</string>
     <string name="save">Save</string>
 
 </resources>

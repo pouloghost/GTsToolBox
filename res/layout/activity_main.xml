@@ -16,21 +16,4 @@
         android:layout_centerHorizontal="true"
         android:text="Stop" />
 
-    <Button
-        android:id="@+id/manualButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/stopButton"
-        android:layout_below="@+id/stopButton"
-        android:layout_marginTop="22dp"
-        android:text="Manual" />
-
-    <ListView
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/manualButton" >
-    </ListView>
-
 </RelativeLayout>
