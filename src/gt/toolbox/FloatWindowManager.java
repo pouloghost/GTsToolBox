@@ -189,4 +189,8 @@ public class FloatWindowManager {
 		layoutParams.y += dy;
 		wm.updateViewLayout(floatView, layoutParams);
 	}
+
+	public void stop() {
+		wm.removeView(floatView);
+	}
 }

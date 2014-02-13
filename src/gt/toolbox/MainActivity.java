@@ -122,14 +122,15 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
-	public boolean onContextItemSelected(MenuItem item) {
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 		// TODO Auto-generated method stub
 		if (item.getItemId() == R.id.menu_exit) {
 			stopService(watcherIntent);
 			stopService(excutorIntent);
+			manager.stop();
 			MainActivity.this.finish();
 		}
-		return super.onContextItemSelected(item);
+		return super.onMenuItemSelected(featureId, item);
 	}
 
 	class LoadDataTask extends
