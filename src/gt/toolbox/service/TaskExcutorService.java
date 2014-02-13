@@ -169,6 +169,7 @@ public class TaskExcutorService extends Service {
 	private void saveListeners() {
 		ArrayList<ActivityLauchListener> directs = ListenerFactory
 				.getDirectModifies();
+		System.out.println("save " + directs.size());
 		for (ActivityLauchListener listener : directs) {
 			db.updateParameter(listener);
 			remove(listener);

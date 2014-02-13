@@ -17,7 +17,7 @@ public class TaskWatcherService extends Service {
 	private static TaskWatcherService self = null;
 
 	// observe task change
-	private String lastPackage = "";
+	private static String lastPackage = "";
 	private ActivityManager manager;
 	private Intent intent = new Intent(
 			TaskExcutorService.MessageType.TASK_CHANGE.toString());
@@ -91,4 +91,7 @@ public class TaskWatcherService extends Service {
 		super.onDestroy();
 	}
 
+	public static String topPackage() {
+		return lastPackage;
+	}
 }

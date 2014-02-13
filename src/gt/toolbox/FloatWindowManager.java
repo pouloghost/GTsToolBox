@@ -6,6 +6,7 @@ import gt.toolbox.listener.ListenerFactory;
 import gt.toolbox.listener.ListenerFactory.ListenerType;
 import gt.toolbox.listener.LockerListener;
 import gt.toolbox.service.TaskExcutorService;
+import gt.toolbox.service.TaskWatcherService;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -76,6 +77,7 @@ public class FloatWindowManager {
 			}
 		});
 		SeekBar brightSB = (SeekBar) floatView.findViewById(R.id.brightSB);
+		brightSB.setProgress(BrightnessUtils.getBrightness(activity));
 		brightSB.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
 			@Override
@@ -100,9 +102,10 @@ public class FloatWindowManager {
 
 			}
 		});
-		brightSB.setProgress(BrightnessUtils.getBrightness(activity));
+
 		CheckBox lockCB = (CheckBox) floatView.findViewById(R.id.lockCB);
-		lockCB.setChecked(BrightnessUtils.isLocked(activity));
+		lockCB.setChecked(BrightnessUtils.isLocked(activity,
+				TaskWatcherService.topPackage()));
 		lockCB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override

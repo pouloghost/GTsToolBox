@@ -33,7 +33,7 @@ public class LockerListener extends ActivityLauchListener {
 	@Override
 	public void onExit(ContextWrapper wrapper, ExcutionContext context) {
 		// TODO Auto-generated method stub
-		BrightnessUtils.releaseWake(lock);
+		BrightnessUtils.releaseWake(lock, tag);
 	}
 
 	@Override

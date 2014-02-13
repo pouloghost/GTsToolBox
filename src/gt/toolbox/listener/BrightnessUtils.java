@@ -1,5 +1,7 @@
 package gt.toolbox.listener;
 
+import java.util.HashMap;
+
 import android.content.ContextWrapper;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -10,7 +12,7 @@ import android.provider.Settings.SettingNotFoundException;
 
 public class BrightnessUtils {
 
-	private static int locks = 0;
+	private static HashMap<String, WakeLock> locks = new HashMap<String, PowerManager.WakeLock>();
 
 	public static void setMode(ContextWrapper wrapper, int mode, Uri uri) {
 		try {
@@ -35,15 +37,14 @@ public class BrightnessUtils {
 				.getSystemService(android.content.Context.POWER_SERVICE);
 		WakeLock lock = manager.newWakeLock(PowerManager.FULL_WAKE_LOCK, tag);
 		lock.acquire();
-		++locks;
+		locks.put(tag, lock);
 		return lock;
 	}
 
-	public static void releaseWake(WakeLock lock) {
+	public static void releaseWake(WakeLock lock, String tag) {
 		if (lock != null && lock.isHeld()) {
 			lock.release();
-			--locks;
-			locks = locks < 0 ? 0 : locks;
+			locks.remove(tag);
 		}
 	}
 
@@ -68,7 +69,7 @@ public class BrightnessUtils {
 		return value;
 	}
 
-	public static boolean isLocked(ContextWrapper wrapper) {
-		return locks > 0;
+	public static boolean isLocked(ContextWrapper wrapper, String tag) {
+		return locks.containsKey(tag);
 	}
 }

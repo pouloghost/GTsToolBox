@@ -48,6 +48,8 @@ public class ListenerFactory {
 		ListenerType listenerType = ListenerType.valueOf(intent
 				.getStringExtra(LISTENER_TYPE));
 		ActivityLauchListener listener = null;
+		System.out.println("add " + listenerType.toString() + " "
+				+ listeners.size());
 		switch (listenerType) {
 		case BRIGHTNESS_MANUAL:
 			int value = intent.getIntExtra(BrightnessListener.BRIGHTNESS, 1);
