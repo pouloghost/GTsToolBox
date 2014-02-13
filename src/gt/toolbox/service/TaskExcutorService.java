@@ -46,7 +46,6 @@ public class TaskExcutorService extends Service {
 						.getParcelableExtra(TaskWatcherService.CONTEXT);
 				informListener(ActionType.EXIT, excutionContext);
 				informListener(ActionType.ENTER, excutionContext);
-				System.out.println(excutionContext.toString());
 				ListenerFactory.clearDirectModifies();
 				break;
 			case DIRECT_MODIFY:
@@ -78,7 +77,7 @@ public class TaskExcutorService extends Service {
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
-		System.out.println("create");
+
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(MessageType.DIRECT_MODIFY.toString());
 		filter.addAction(MessageType.TASK_CHANGE.toString());
@@ -88,7 +87,6 @@ public class TaskExcutorService extends Service {
 		db = new DBManager(this);
 
 		bindListeners();
-		System.out.println("done");
 	}
 
 	@Override

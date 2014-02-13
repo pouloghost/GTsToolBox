@@ -20,8 +20,6 @@ public class FloatRelativeLayout extends RelativeLayout {
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent event) {
 		// TODO Auto-generated method stub
-		System.out.println("touch event");
-		// TODO Auto-generated method stub
 		x = event.getRawX();
 		y = event.getRawY();
 

@@ -73,7 +73,6 @@ public class TaskWatcherService extends Service {
 							// differ from the direct modify from float window
 							sendBroadcast(intent);
 							lastPackage = currentPackage;
-							System.out.println("watcher " + lastPackage);
 						}
 					} catch (InterruptedException e) {
 						System.out.println(e.getMessage());

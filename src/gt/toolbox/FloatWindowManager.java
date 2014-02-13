@@ -32,22 +32,105 @@ public class FloatWindowManager {
 	private WindowManager wm;
 	private WindowManager.LayoutParams layoutParams;
 	private static final String PREF_NAME = "gt.toolbox.pref";
-	private Position position;
-
-	private Intent changeIntent = new Intent(
-			TaskExcutorService.MessageType.DIRECT_MODIFY.toString());
-	private Intent saveIntent = new Intent(
-			TaskExcutorService.MessageType.SAVE_LISTENER.toString());
-
-	private FloatWindowManager() {
-
-	};
 
 	public static FloatWindowManager getManager() {
 		if (instance == null) {
 			instance = new FloatWindowManager();
 		}
 		return instance;
+	}
+
+	private Position position;
+	private Intent changeIntent = new Intent(
+			TaskExcutorService.MessageType.DIRECT_MODIFY.toString());
+
+	private Intent saveIntent = new Intent(
+			TaskExcutorService.MessageType.SAVE_LISTENER.toString());;
+
+	private FloatWindowManager() {
+
+	}
+
+	private void attatchBig(final Activity activity) {
+		floatView = View.inflate(activity.getApplicationContext(),
+				R.layout.float_window_big, null);
+		// bind listeners
+		Button goSmallB = (Button) floatView.findViewById(R.id.goSmallB);
+		goSmallB.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				wm.removeView(floatView);
+				attatchSmall(activity);
+				showFloatWindow();
+			}
+		});
+		Button saveB = (Button) floatView.findViewById(R.id.saveB);
+		saveB.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				activity.sendBroadcast(saveIntent);
+			}
+		});
+		SeekBar brightSB = (SeekBar) floatView.findViewById(R.id.brightSB);
+		brightSB.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress,
+					boolean fromUser) {
+				// TODO Auto-generated method stub
+				changeIntent.putExtra(ListenerFactory.LISTENER_TYPE,
+						ListenerType.BRIGHTNESS_MANUAL.toString());
+				changeIntent.putExtra(BrightnessListener.BRIGHTNESS, progress);
+				activity.sendBroadcast(changeIntent);
+			}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		brightSB.setProgress(BrightnessUtils.getBrightness(activity));
+		CheckBox lockCB = (CheckBox) floatView.findViewById(R.id.lockCB);
+		lockCB.setChecked(BrightnessUtils.isLocked(activity));
+		lockCB.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				// TODO Auto-generated method stub
+				changeIntent.putExtra(ListenerFactory.LISTENER_TYPE,
+						ListenerType.WAKE_LOCK.toString());
+				changeIntent.putExtra(LockerListener.LOCK_ON, isChecked);
+				activity.sendBroadcast(changeIntent);
+			}
+		});
+	}
+
+	private void attatchSmall(final Activity activity) {
+		floatView = View.inflate(activity.getApplicationContext(),
+				R.layout.float_window_small, null);
+		Button goBigB = (Button) floatView.findViewById(R.id.goBigB);
+		goBigB.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				wm.removeView(floatView);
+				attatchBig(activity);
+				showFloatWindow();
+			}
+		});
+		// goBigButton.setOnTouchListener(nullListener);
 	}
 
 	// -----float----
@@ -85,12 +168,6 @@ public class FloatWindowManager {
 		showFloatWindow();
 	}
 
-	public void updatePosition(int dx, int dy) {
-		layoutParams.x += dx;
-		layoutParams.y += dy;
-		wm.updateViewLayout(floatView, layoutParams);
-	}
-
 	public void finalPosition(int dx, int dy) {
 		position.setX((int) (layoutParams.x + dx));
 		position.setY((int) (layoutParams.y + dy));
@@ -104,88 +181,9 @@ public class FloatWindowManager {
 		wm.updateViewLayout(floatView, layoutParams);
 	}
 
-	private void attatchSmall(final Activity activity) {
-		floatView = View.inflate(activity.getApplicationContext(),
-				R.layout.float_window_small, null);
-		Button goBigButton = (Button) floatView.findViewById(R.id.goBigButton);
-		goBigButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				wm.removeView(floatView);
-				attatchBig(activity);
-				showFloatWindow();
-			}
-		});
-		// goBigButton.setOnTouchListener(nullListener);
-	}
-
-	private void attatchBig(final Activity activity) {
-		floatView = View.inflate(activity.getApplicationContext(),
-				R.layout.float_window_big, null);
-		// bind listeners
-		Button goSmallButton = (Button) floatView
-				.findViewById(R.id.goSmallButton);
-		goSmallButton.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				wm.removeView(floatView);
-				attatchSmall(activity);
-				showFloatWindow();
-			}
-		});
-		Button saveButton = (Button) floatView.findViewById(R.id.saveButton);
-		saveButton.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				activity.sendBroadcast(saveIntent);
-			}
-		});
-		SeekBar brightSeekbar = (SeekBar) floatView
-				.findViewById(R.id.brightSeekBar);
-		brightSeekbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress,
-					boolean fromUser) {
-				// TODO Auto-generated method stub
-				changeIntent.putExtra(ListenerFactory.LISTENER_TYPE,
-						ListenerType.BRIGHTNESS_MANUAL.toString());
-				changeIntent.putExtra(BrightnessListener.BRIGHTNESS, progress);
-				activity.sendBroadcast(changeIntent);
-			}
-		});
-		brightSeekbar.setProgress(BrightnessUtils.getBrightness(activity));
-		CheckBox lockCheckBox = (CheckBox) floatView
-				.findViewById(R.id.lockCheckBox);
-		lockCheckBox.setChecked(BrightnessUtils.isLocked(activity));
-		lockCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				// TODO Auto-generated method stub
-				changeIntent.putExtra(ListenerFactory.LISTENER_TYPE,
-						ListenerType.WAKE_LOCK.toString());
-				changeIntent.putExtra(LockerListener.LOCK_ON, isChecked);
-				activity.sendBroadcast(changeIntent);
-			}
-		});
+	public void updatePosition(int dx, int dy) {
+		layoutParams.x += dx;
+		layoutParams.y += dy;
+		wm.updateViewLayout(floatView, layoutParams);
 	}
 }
