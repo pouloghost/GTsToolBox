@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -167,7 +168,7 @@ public class TaskExcutorService extends Service {
 	}
 
 	private void saveListeners() {
-		ArrayList<ActivityLauchListener> directs = ListenerFactory
+		TreeSet<ActivityLauchListener> directs = ListenerFactory
 				.getDirectModifies();
 		System.out.println("save " + directs.size());
 		for (ActivityLauchListener listener : directs) {

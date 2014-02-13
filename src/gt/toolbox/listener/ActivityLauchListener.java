@@ -3,7 +3,8 @@ package gt.toolbox.listener;
 import android.content.ContextWrapper;
 import gt.toolbox.ExcutionContext;
 
-public abstract class ActivityLauchListener {
+public abstract class ActivityLauchListener implements
+		Comparable<ActivityLauchListener> {
 	// must have a constructor using a hashmap as parameter
 	// when a new task is brought to the front
 
@@ -32,4 +33,15 @@ public abstract class ActivityLauchListener {
 	public abstract void onExit(ContextWrapper wrapper, ExcutionContext context);
 
 	public abstract String getPara();
+
+	@Override
+	public int compareTo(ActivityLauchListener another) {
+		// TODO Auto-generated method stub
+		if (this.getPackageName().equals(another.getPackageName())
+				&& this.getType().equals(another.getType())) {
+			return 0;
+		}
+		return 1;
+	}
+
 }

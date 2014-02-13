@@ -2,6 +2,7 @@ package gt.toolbox.listener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeSet;
 
 import android.content.Intent;
 
@@ -17,7 +18,7 @@ public class ListenerFactory {
 		INT, FLOAT, DOUBLE, BOOLEAN, STRING
 	}
 
-	private static ArrayList<ActivityLauchListener> listeners = new ArrayList<ActivityLauchListener>();
+	private static TreeSet<ActivityLauchListener> listeners = new TreeSet<ActivityLauchListener>();
 
 	public static ActivityLauchListener getListener(ListenerType type,
 			String packageName, String para) {
@@ -72,12 +73,12 @@ public class ListenerFactory {
 		return listener;
 	}
 
-	public static ArrayList<ActivityLauchListener> getDirectModifies() {
+	public static TreeSet<ActivityLauchListener> getDirectModifies() {
 		return listeners;
 	}
 
 	public static void clearDirectModifies() {
-		listeners = new ArrayList<ActivityLauchListener>();
+		listeners = new TreeSet<ActivityLauchListener>();
 	}
 
 	private static HashMap<String, Object> parseParameters(String para) {
