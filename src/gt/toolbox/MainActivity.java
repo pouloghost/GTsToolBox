@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
 		startService(watcherIntent);
 		startService(excutorIntent);
 
+		manager.stop();
 		manager.createFloatWindow(this, true);
 
 		listenerLV
